@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Masa harness page for the audit engine</title>
+    <meta name="description" content="A description that is comfortably within the recommended snippet length for testing the browser path of the audit engine." />
+    <link rel="canonical" href="https://example.com/harness" />
+    <meta property="og:title" content="Harness" />
+    <meta property="og:image" content="https://example.com/og.png" />
+    <link rel="alternate" hreflang="en" href="https://example.com/harness" />
+    <link rel="alternate" hreflang="x-default" href="https://example.com/harness" />
+    <script type="application/ld+json">
+      { "@context": "https://schema.org", "@type": "WebSite", "name": "Masa harness" }
+    </script>
+  </head>
+  <body>
+    <h1>Single heading</h1>
+    <h2>Section</h2>
+    <img src="ok.png" alt="described" />
+    <img src="bad.png" />
+    <a href="https://example.com/internal">internal-ish</a>
+    <a href="https://other.example/out" rel="nofollow">external</a>
+    <pre id="out">running…</pre>
+    <script type="module">
+      import { analyzeDocument } from "../../../packages/audit-core/dist/index.js";
+      const report = analyzeDocument(document, "https://example.com/harness");
+      window.__report = report;
+      document.getElementById("out").textContent = "score=" + report.score.overall;
+      document.title = "DONE score=" + report.score.overall;
+    </script>
+  </body>
+</html>

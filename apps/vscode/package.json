@@ -9,7 +9,7 @@
   "homepage": "https://masamedia.co.il/tools/web-audit/",
   "repository": {
     "type": "git",
-    "url": "https://github.com/masa-media-digital/masa-visibility-tools.git",
+    "url": "https://github.com/Masa-Media/masa-visibility-tools.git",
     "directory": "apps/vscode"
   },
   "bugs": { "url": "https://masamedia.co.il/support" },

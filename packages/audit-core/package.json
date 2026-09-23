@@ -17,7 +17,7 @@
   "homepage": "https://masamedia.co.il",
   "repository": {
     "type": "git",
-    "url": "https://github.com/masa-media-digital/masa-visibility-tools.git",
+    "url": "https://github.com/Masa-Media/masa-visibility-tools.git",
     "directory": "packages/audit-core"
   },
   "bugs": "https://masamedia.co.il/support",

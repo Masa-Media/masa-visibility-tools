@@ -7,9 +7,8 @@
   "license": "MIT",
   "type": "module",
   "scripts": {
-    "icons": "node make-icons.mjs",
-    "build": "node make-icons.mjs && node build.mjs",
-    "package": "node make-icons.mjs && node build.mjs --zip",
+    "build": "node build.mjs",
+    "package": "node build.mjs --zip",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {

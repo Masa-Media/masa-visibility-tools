@@ -55,6 +55,7 @@ for (const [name, manifest] of Object.entries(targets)) {
   await bundle("analyze-content.ts", join(dir, "analyze.bundle.js"), name);
   cpSync(join(HERE, "public", "popup.html"), join(dir, "popup.html"));
   cpSync(join(HERE, "public", "styles.css"), join(dir, "styles.css"));
+  cpSync(join(HERE, "public", "logo.png"), join(dir, "logo.png"));
   cpSync(join(HERE, "public", "icons"), join(dir, "icons"), { recursive: true });
   writeFileSync(join(dir, "manifest.json"), JSON.stringify(manifest, null, 2));
   console.log(`built dist/${name}/`);

@@ -23,11 +23,7 @@ body {
 }
 header { padding: 12px 14px; border-bottom: 1px solid var(--line); }
 .brand { display: flex; align-items: center; gap: 10px; }
-.logo {
-  width: 30px; height: 30px; flex: none; border-radius: 8px;
-  display: grid; place-items: center; font-weight: 800; color: #06131a;
-  background: linear-gradient(135deg, var(--cyan), var(--violet));
-}
+.logo { height: 30px; width: auto; flex: none; display: block; }
 .brand strong { display: block; font-size: 14px; }
 .url { display: block; color: var(--muted); font-size: 11px; max-width: 300px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 nav#tabs { display: flex; gap: 2px; padding: 8px 10px 0; flex-wrap: wrap; }

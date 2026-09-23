@@ -1,0 +1,60 @@
+{
+  "name": "@masamedia/audit-core",
+  "version": "0.1.0",
+  "description": "Framework-free web-page audit engine: SEO, GEO / AI-visibility, schema, Open Graph, hreflang, headings, images and AI-crawler access. By Masa Media Digital LTD.",
+  "keywords": [
+    "seo",
+    "geo",
+    "ai-visibility",
+    "schema",
+    "structured-data",
+    "hreflang",
+    "open-graph",
+    "gptbot",
+    "llms-txt",
+    "web-audit"
+  ],
+  "homepage": "https://masamedia.co.il",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/masa-media-digital/masa-visibility-tools.git",
+    "directory": "packages/audit-core"
+  },
+  "bugs": "https://masamedia.co.il/support",
+  "author": "Masa Media Digital LTD (https://masamedia.co.il)",
+  "license": "MIT",
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "sideEffects": false,
+  "scripts": {
+    "build": "tsup",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "node-html-parser": "^6.1.13"
+  },
+  "devDependencies": {
+    "tsup": "^8.3.5",
+    "typescript": "^5.6.3",
+    "vitest": "^2.1.8"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

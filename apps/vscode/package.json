@@ -1,0 +1,41 @@
+{
+  "name": "masa-web-audit",
+  "displayName": "Masa Web Audit",
+  "description": "Audit the current HTML file or any URL for SEO, GEO / AI-visibility, schema, hreflang and AI-crawler access — without leaving your editor.",
+  "version": "0.1.0",
+  "publisher": "masamedia",
+  "license": "MIT",
+  "author": "Masa Media Digital LTD (https://masamedia.co.il)",
+  "homepage": "https://masamedia.co.il/tools/web-audit/",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/masa-media-digital/masa-visibility-tools.git",
+    "directory": "apps/vscode"
+  },
+  "bugs": { "url": "https://masamedia.co.il/support" },
+  "icon": "icon.png",
+  "engines": { "vscode": "^1.85.0" },
+  "categories": ["Linters", "Other"],
+  "keywords": ["seo", "geo", "ai visibility", "schema", "hreflang", "audit"],
+  "main": "./dist/extension.js",
+  "contributes": {
+    "commands": [
+      { "command": "masa.auditFile", "title": "Masa: Audit current HTML file", "category": "Masa" },
+      { "command": "masa.auditUrl", "title": "Masa: Audit a URL", "category": "Masa" }
+    ]
+  },
+  "scripts": {
+    "build": "node build.mjs",
+    "package": "node build.mjs && npx --yes @vscode/vsce@^3 package --no-dependencies -o masa-web-audit.vsix",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@masamedia/audit-core": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/node": "^22.9.0",
+    "@types/vscode": "^1.85.0",
+    "esbuild": "^0.24.0",
+    "typescript": "^5.6.3"
+  }
+}

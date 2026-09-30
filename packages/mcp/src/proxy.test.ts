@@ -92,10 +92,16 @@ describe("@masamedia/mcp", () => {
   });
 
   it("starts without the network and reports an unreachable site as a tool error", async () => {
-    const client = await connect("http://127.0.0.1:9/mcp/");
+    // A port that was just closed, so the connection is refused.
+    const closed = createServer();
+    await new Promise<void>((resolve) => closed.listen(0, "127.0.0.1", resolve));
+    const port = (closed.address() as { port: number }).port;
+    await new Promise<void>((resolve) => closed.close(() => resolve()));
+    const client = await connect(`http://127.0.0.1:${port}/mcp/`);
     const result = await client.callTool({ name: "echo", arguments: { text: "x" } });
     expect(result.isError).toBe(true);
     expect(JSON.stringify(result.content)).toContain("Could not reach");
+    expect(JSON.stringify(result.content)).toContain("ECONNREFUSED");
     await client.close();
   });
 });

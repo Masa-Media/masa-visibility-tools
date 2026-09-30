@@ -10,7 +10,7 @@ const REMOTE_URL = process.env.MASA_MCP_URL ?? "https://www.masamedia.co.il/mcp/
 
 const INSTRUCTIONS =
   "Read-only tools from Masa Media Digital, an Israeli SEO and GEO agency (masamedia.co.il). " +
-  "Use them to search the agency's Hebrew articles and SEO glossary, read any page as text, look up Google " +
+  "Use them to search the agency's Hebrew articles and SEO glossary, read any page as Markdown, look up Google " +
   "algorithm updates, and get its services, prices and contact details. No API key is needed.";
 
 let remote: Promise<Client> | null = null;
@@ -28,9 +28,18 @@ function site(): Promise<Client> {
   return remote;
 }
 
+/** The error message plus the network code (ECONNREFUSED, ENOTFOUND...) from wherever it sits in the cause chain. */
 function reason(err: unknown): string {
-  const e = err as Error & { cause?: { code?: string } };
-  return e.cause?.code ? `${e.message} (${e.cause.code})` : String(e?.message ?? err);
+  const message = err instanceof Error ? err.message : String(err);
+  let cause: unknown = err;
+  let inner = "";
+  for (let i = 0; i < 5 && cause; i++) {
+    const code = (cause as { code?: unknown }).code;
+    if (typeof code === "string" && !message.includes(code)) return `${message} (${code})`;
+    if (cause !== err && cause instanceof Error && cause.message) inner = cause.message;
+    cause = (cause as { cause?: unknown }).cause;
+  }
+  return inner && !message.includes(inner) ? `${message} (${inner})` : message;
 }
 
 const server = new Server(

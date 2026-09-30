@@ -1,6 +1,6 @@
 # Masa Visibility Tools
 
-Free SEO and GEO audit tools from [Masa Media](https://www.masamedia.co.il), an Israeli SEO and GEO agency. They check a page's SEO basics, indexability, AI-crawler access, structured data and accessibility basics.
+Free SEO and GEO audit tools from [Masa Media Digital](https://www.masamedia.co.il), an Israeli SEO and GEO agency. They check a page's SEO basics, indexability, AI-crawler access, structured data and accessibility basics.
 
 One shared audit engine, many surfaces: a browser extension, a CLI, a VS Code extension, a WordPress plugin and a Google Sheets add-on all read a page the same way and report the same findings.
 

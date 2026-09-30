@@ -114,6 +114,15 @@ describe("masa-audit CLI", () => {
     expect(ftp.code).toBe(1);
   });
 
+  it("stops quietly when the reader closes the pipe early (| head)", async () => {
+    const child = spawn(process.execPath, [CLI, `${base}/`], { env: { ...process.env, NO_COLOR: "1" } });
+    let stderr = "";
+    child.stderr.on("data", (d) => (stderr += d));
+    child.stdout.once("data", () => child.stdout.destroy());
+    await new Promise((resolve) => child.on("close", resolve));
+    expect(stderr).not.toContain("EPIPE");
+  });
+
   it("exits 2 when the page cannot be fetched", async () => {
     const r = await run(["http://127.0.0.1:9/", "--timeout", "2000"]);
     expect(r.code).toBe(2);

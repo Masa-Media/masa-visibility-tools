@@ -1,7 +1,7 @@
 {
   "name": "@masamedia/audit-core",
-  "version": "0.1.0",
-  "description": "Framework-free web-page audit engine: SEO, GEO / AI visibility, schema, Open Graph, hreflang, headings, images and AI-crawler access. A free tool from Masa Media, an Israeli SEO and GEO agency.",
+  "version": "0.1.1",
+  "description": "Framework-free web-page audit engine: SEO, GEO / AI visibility, schema, Open Graph, hreflang, headings, images and AI-crawler access. A free tool from Masa Media Digital, an Israeli SEO and GEO agency.",
   "keywords": [
     "seo",
     "geo",

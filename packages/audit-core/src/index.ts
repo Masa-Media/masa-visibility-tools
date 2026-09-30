@@ -1,6 +1,6 @@
 /**
  * @masamedia/audit-core
- * Framework-free web-page audit engine by Masa Media, an Israeli SEO and GEO agency.
+ * Framework-free web-page audit engine by Masa Media Digital, an Israeli SEO and GEO agency.
  *
  *   import { analyzeHtml } from "@masamedia/audit-core";
  *   const report = analyzeHtml(html, "https://example.com", { robotsTxt });

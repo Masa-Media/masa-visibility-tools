@@ -1,6 +1,6 @@
 # @masamedia/audit-core
 
-A web-page audit engine by [Masa Media](https://www.masamedia.co.il), an Israeli SEO and GEO agency. It reads a page's HTML and reports on SEO, AI-crawler access (GEO), structured data, hreflang, accessibility basics and social tags. It is the engine behind the [`masa-audit`](https://www.npmjs.com/package/@masamedia/audit-cli) command-line tool.
+A web-page audit engine by [Masa Media Digital](https://www.masamedia.co.il), an Israeli SEO and GEO agency. It reads a page's HTML and reports on SEO, AI-crawler access (GEO), structured data, hreflang, accessibility basics and social tags. It is the engine behind the [`masa-audit`](https://www.npmjs.com/package/@masamedia/audit-cli) command-line tool.
 
 ## Install
 

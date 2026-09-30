@@ -1,7 +1,7 @@
 {
   "name": "@masamedia/audit-cli",
-  "version": "0.1.0",
-  "description": "masa-audit: audit any URL for SEO, GEO / AI visibility, schema, hreflang and AI-crawler access from the command line. A free tool from Masa Media, an Israeli SEO and GEO agency.",
+  "version": "0.1.1",
+  "description": "masa-audit: audit any URL for SEO, GEO / AI visibility, schema, hreflang and AI-crawler access from the command line. A free tool from Masa Media Digital, an Israeli SEO and GEO agency.",
   "keywords": [
     "seo",
     "cli",

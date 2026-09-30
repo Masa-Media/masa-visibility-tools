@@ -1,6 +1,6 @@
 # masa-audit
 
-Audit any URL from the terminal: SEO basics, indexability, AI-crawler access (GEO), structured data and hreflang. A free tool from [Masa Media](https://www.masamedia.co.il), an Israeli SEO and GEO agency.
+Audit any URL from the terminal: SEO basics, indexability, AI-crawler access (GEO), structured data and hreflang. A free tool from [Masa Media Digital](https://www.masamedia.co.il), an Israeli SEO and GEO agency.
 
 ## Run without installing
 
@@ -28,7 +28,7 @@ masa-audit https://example.com --json > report.json
 Output of `masa-audit example.com` (30 September 2026, AI-crawler rows shortened):
 
 ```
-Masa Media web audit  https://example.com/
+Masa Media Digital web audit  https://example.com/
 Score 83/100   status 200
 
 Title        Example Domain  [14]

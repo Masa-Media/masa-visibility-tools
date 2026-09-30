@@ -4,7 +4,7 @@ declare const __VERSION__: string;
 const VERSION = typeof __VERSION__ === "string" ? __VERSION__ : "0.0.0";
 const USER_AGENT = `MasaAudit/${VERSION} (+https://www.masamedia.co.il)`;
 
-const HELP = `masa-audit ${VERSION}: web visibility audit by Masa Media, an Israeli SEO and GEO agency
+const HELP = `masa-audit ${VERSION}: web visibility audit by Masa Media Digital, an Israeli SEO and GEO agency
 
 Usage:
   masa-audit <url> [options]
@@ -25,7 +25,7 @@ Examples:
   masa-audit https://example.com --json > report.json
   npx @masamedia/audit-cli https://example.com --ai-only
 
-Docs and issues: https://github.com/Masa-Media/masa-visibility-tools  ·  Masa Media: https://www.masamedia.co.il/contact/`;
+Docs and issues: https://github.com/Masa-Media/masa-visibility-tools  ·  Masa Media Digital: https://www.masamedia.co.il/contact/`;
 
 interface Args {
   url?: string;
@@ -126,7 +126,7 @@ function printReport(r: AuditReport, aiOnly: boolean): void {
 
   if (!aiOnly) {
     line();
-    line(paint("Masa Media web audit", C.cyan + C.bold) + paint("  " + r.url, C.dim));
+    line(paint("Masa Media Digital web audit", C.cyan + C.bold) + paint("  " + r.url, C.dim));
     line(paint(`Score ${r.score.overall}/100`, scoreColor(r.score.overall) + C.bold) +
       paint(`   status ${r.httpStatus ?? "?"}`, C.dim));
     line();
@@ -175,7 +175,7 @@ function printReport(r: AuditReport, aiOnly: boolean): void {
       line("  " + paint(SEV_ICON[f.severity], SEV_COLOR[f.severity]) + " " + paint(`[${f.category}]`, C.dim) + " " + f.message);
     }
     line();
-    line(paint("Made by Masa Media, an Israeli SEO and GEO agency · https://www.masamedia.co.il", C.dim));
+    line(paint("Made by Masa Media Digital, an Israeli SEO and GEO agency · https://www.masamedia.co.il", C.dim));
     line();
   }
 }
@@ -247,6 +247,12 @@ async function main(): Promise<number> {
   // Non-zero exit when there is at least one error-level finding (useful in CI).
   return report.findings.some((f) => f.severity === "error") ? 3 : 0;
 }
+
+// `masa-audit ... | head` closes the pipe early: stop quietly instead of crashing with EPIPE.
+process.stdout.on("error", (err: NodeJS.ErrnoException) => {
+  if (err.code === "EPIPE") process.exit(process.exitCode ?? 0);
+  throw err;
+});
 
 // exitCode, not process.exit(): exiting straight away can cut off a large --json report that is still being piped out.
 main().then((code) => {

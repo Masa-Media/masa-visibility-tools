@@ -65,10 +65,13 @@ importers:
 
   packages/cli:
     dependencies:
+      node-html-parser:
+        specifier: ^6.1.13
+        version: 6.1.13
+    devDependencies:
       '@masamedia/audit-core':
         specifier: workspace:*
         version: link:../audit-core
-    devDependencies:
       '@types/node':
         specifier: ^22.9.0
         version: 22.20.4

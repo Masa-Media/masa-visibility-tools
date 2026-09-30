@@ -1,7 +1,7 @@
 {
   "name": "@masamedia/audit-core",
   "version": "0.1.0",
-  "description": "Framework-free web-page audit engine: SEO, GEO / AI-visibility, schema, Open Graph, hreflang, headings, images and AI-crawler access. By Masa Media Digital LTD.",
+  "description": "Framework-free web-page audit engine: SEO, GEO / AI visibility, schema, Open Graph, hreflang, headings, images and AI-crawler access. A free tool from Masa Media, an Israeli SEO and GEO agency.",
   "keywords": [
     "seo",
     "geo",
@@ -11,17 +11,16 @@
     "hreflang",
     "open-graph",
     "gptbot",
-    "llms-txt",
     "web-audit"
   ],
-  "homepage": "https://masamedia.co.il",
+  "homepage": "https://www.masamedia.co.il",
   "repository": {
     "type": "git",
     "url": "https://github.com/Masa-Media/masa-visibility-tools.git",
     "directory": "packages/audit-core"
   },
-  "bugs": "https://masamedia.co.il/support",
-  "author": "Masa Media Digital LTD (https://masamedia.co.il)",
+  "bugs": "https://github.com/Masa-Media/masa-visibility-tools/issues",
+  "author": "Masa Media Digital LTD (https://www.masamedia.co.il)",
   "license": "MIT",
   "type": "module",
   "main": "./dist/index.cjs",
@@ -29,9 +28,14 @@
   "types": "./dist/index.d.ts",
   "exports": {
     ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.js",
-      "require": "./dist/index.cjs"
+      "import": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      },
+      "require": {
+        "types": "./dist/index.d.cts",
+        "default": "./dist/index.cjs"
+      }
     }
   },
   "files": [
@@ -55,6 +59,9 @@
     "vitest": "^2.1.8"
   },
   "engines": {
-    "node": ">=18"
+    "node": ">=20"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }

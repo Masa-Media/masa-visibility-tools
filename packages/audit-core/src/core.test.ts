@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { analyzeHtml } from "./index.js";
-import { parseAiCrawlers } from "./robots.js";
+import { parseAiCrawlers, robotsAllows } from "./robots.js";
 
 const GOOD = `<!doctype html><html lang="en"><head>
 <title>Masa Media web audit for example.com</title>
@@ -93,5 +93,63 @@ describe("parseAiCrawlers", () => {
   it("treats empty Disallow as allowed", () => {
     const rep = parseAiCrawlers("User-agent: *\nDisallow:\n");
     expect(rep.agents.PerplexityBot).toBe("allowed");
+  });
+});
+
+describe("pages search engines cannot index", () => {
+  const PAGE = GOOD;
+  it("an HTTP error page is an error and not indexable", () => {
+    const r = analyzeHtml(PAGE, "https://example.com/", { httpStatus: 500 });
+    expect(r.findings.find((f) => f.id === "http.status")?.severity).toBe("error");
+    expect(r.indexable.value).toBe(false);
+    expect(r.score.overall).toBeLessThan(90);
+  });
+
+  it("noindex from meta robots or the X-Robots-Tag header is an error", () => {
+    const meta = analyzeHtml(PAGE.replace("<head>", '<head><meta name="robots" content="noindex,nofollow">'), "https://example.com/");
+    expect(meta.findings.find((f) => f.id === "robots.noindex")?.severity).toBe("error");
+    const header = analyzeHtml(PAGE, "https://example.com/", { xRobotsTag: "noindex" });
+    expect(header.indexable.reasons).toContain("X-Robots-Tag: noindex");
+    expect(analyzeHtml(PAGE, "https://example.com/", { xRobotsTag: "googlebot: noindex" }).indexable.value).toBe(false);
+    expect(analyzeHtml(PAGE, "https://example.com/", { xRobotsTag: "otherbot: noindex" }).indexable.value).toBe(true);
+  });
+
+  it("robots.txt that blocks the URL is an error; one that blocks other paths is fine", () => {
+    const blocked = analyzeHtml(PAGE, "https://example.com/", { robotsTxt: "User-agent: *\nDisallow: /\n" });
+    expect(blocked.findings.map((f) => f.id)).toContain("robots.txt.blocked");
+    expect(blocked.ai.agents.GPTBot).toBe("blocked");
+    const open = analyzeHtml(PAGE, "https://example.com/", { robotsTxt: "User-agent: *\nAllow: /\nDisallow: /admin/\n" });
+    expect(open.findings.map((f) => f.id)).not.toContain("robots.txt.blocked");
+    expect(Object.values(open.ai.agents).every((a) => a === "allowed")).toBe(true);
+    expect(open.ai.path).toBe("/");
+  });
+
+  it("a site with no robots.txt (404) allows every crawler", () => {
+    const r = analyzeHtml(PAGE, "https://example.com/", { robotsStatus: 404 });
+    expect(r.ai.source).toBe("missing");
+    expect(Object.values(r.ai.agents).every((a) => a === "allowed")).toBe(true);
+  });
+});
+
+describe("robots.txt matching (RFC 9309)", () => {
+  const robots = "User-agent: *\nDisallow: /private\nAllow: /private/public\nDisallow: /*.pdf$\n\nUser-agent: GPTBot\nDisallow: /\n";
+  it("longest rule wins, Allow wins a tie, wildcards and $ work", () => {
+    expect(robotsAllows(robots, "Googlebot", "/private/x")).toBe(false);
+    expect(robotsAllows(robots, "Googlebot", "/private/public/x")).toBe(true);
+    expect(robotsAllows(robots, "Googlebot", "/files/a.pdf")).toBe(false);
+    expect(robotsAllows(robots, "Googlebot", "/files/a.pdf?x=1")).toBe(true);
+    expect(robotsAllows(robots, "GPTBot", "/anything")).toBe(false);
+    expect(robotsAllows("User-agent: *\nDisallow: /a\nAllow: /a\n", "Googlebot", "/a")).toBe(true);
+  });
+
+  it("reports per page when given a path", () => {
+    const rep = parseAiCrawlers(robots, "/blog/");
+    expect(rep.agents.ClaudeBot).toBe("allowed");
+    expect(rep.agents.GPTBot).toBe("blocked");
+    expect(parseAiCrawlers(robots, "/private/x").agents.ClaudeBot).toBe("blocked");
+  });
+
+  it("an empty robots.txt allows everyone", () => {
+    expect(parseAiCrawlers("").agents.GPTBot).toBe("allowed");
   });
 });

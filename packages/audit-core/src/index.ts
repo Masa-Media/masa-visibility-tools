@@ -1,6 +1,6 @@
 /**
  * @masamedia/audit-core
- * Framework-free web-page audit engine by Masa Media Digital LTD.
+ * Framework-free web-page audit engine by Masa Media, an Israeli SEO and GEO agency.
  *
  *   import { analyzeHtml } from "@masamedia/audit-core";
  *   const report = analyzeHtml(html, "https://example.com", { robotsTxt });
@@ -11,7 +11,7 @@
 export * from "./types.js";
 export { analyzeSnapshot, type AnalyzeOptions } from "./analyze.js";
 export { snapshotFromHtml } from "./snapshot.js";
-export { parseAiCrawlers, AI_CRAWLERS, type AiCrawler } from "./robots.js";
+export { parseAiCrawlers, robotsAllows, AI_CRAWLERS, type AiCrawler } from "./robots.js";
 
 import { analyzeSnapshot, type AnalyzeOptions } from "./analyze.js";
 import { snapshotFromHtml } from "./snapshot.js";
@@ -23,11 +23,15 @@ export function analyzeHtml(html: string, url: string, opts?: AnalyzeOptions): A
 }
 
 /**
- * Analyse a live DOM Document (browser). Reads the rendered DOM, so it reflects
- * client-side rendering — which is exactly what matters for GEO / AI crawlers
- * that execute or skip JavaScript.
+ * Analyse a live DOM Document (browser). Reads the rendered DOM, after JavaScript has run.
+ * Many AI crawlers read only the HTML the server sends, so compare with analyzeHtml on the raw response
+ * to see what they miss.
  */
-export function analyzeDocument(doc: Document, url: string, opts?: AnalyzeOptions): AuditReport {
+export function analyzeDocument(
+  doc: { documentElement?: { outerHTML: string } | null },
+  url: string,
+  opts?: AnalyzeOptions,
+): AuditReport {
   const html = doc.documentElement?.outerHTML ?? "";
   return analyzeHtml(html, url, opts);
 }

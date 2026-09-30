@@ -63,25 +63,52 @@ function parseGroups(body: string): Group[] {
   return groups;
 }
 
-function accessFor(group: Group | undefined): AiAccess {
-  if (!group) return "unspecified";
-  const blocksRoot = group.disallow.some((d) => d === "/" || d === "");
-  // "Disallow: " (empty) means allow-all in the robots spec.
-  const rootDisallow = group.disallow.some((d) => d === "/");
-  const allowsRoot = group.allow.some((a) => a === "/");
-  if (rootDisallow && !allowsRoot) return "blocked";
-  if (group.disallow.some((d) => d && d !== "")) return "partial";
-  // Only empty disallows, or none at all.
-  void blocksRoot;
-  return "allowed";
+/** A robots.txt path pattern as a RegExp: "*" matches any run of characters, a trailing "$" anchors the end (RFC 9309). */
+function patternToRegExp(pattern: string): RegExp {
+  const anchored = pattern.endsWith("$");
+  const body = (anchored ? pattern.slice(0, -1) : pattern)
+    .split("*")
+    .map((part) => part.replace(/[.+?^${}()|[\]\\]/g, "\\$&"))
+    .join(".*");
+  return new RegExp("^" + body + (anchored ? "$" : ""));
+}
+
+/**
+ * Whether a group lets its crawlers fetch one path: the longest matching rule wins and Allow wins a tie (RFC 9309).
+ * An empty "Disallow:" is not a rule.
+ */
+function allowsPath(group: Group, path: string): boolean {
+  let best = { length: -1, allow: true };
+  const consider = (rules: string[], allow: boolean) => {
+    for (const rule of rules) {
+      if (!rule || !patternToRegExp(rule).test(path)) continue;
+      if (rule.length > best.length || (rule.length === best.length && allow)) best = { length: rule.length, allow };
+    }
+  };
+  consider(group.disallow, false);
+  consider(group.allow, true);
+  return best.allow;
+}
+
+/** Site-wide summary for one group, used when no page path is given. */
+function siteAccess(group: Group): AiAccess {
+  if (!allowsPath(group, "/")) return "blocked";
+  return group.disallow.some((d) => d) ? "partial" : "allowed";
+}
+
+/** The group that applies to a user-agent: its own named group, else the "*" group (RFC 9309). */
+function groupFor(groups: Group[], agent: string): Group | undefined {
+  const name = agent.toLowerCase();
+  return groups.find((g) => g.agents.includes(name)) ?? groups.find((g) => g.agents.includes("*"));
 }
 
 /**
  * Report each AI crawler's access from a robots.txt body.
- * A named group wins over the "*" wildcard group; when only "*" applies the
- * result reflects the wildcard and the agent is still reported (not hidden).
+ * With `path` (the audited page's path and query), each crawler is "allowed" or "blocked" for that page.
+ * Without it, the result summarises the whole site: "partial" means some paths are disallowed.
+ * A named group wins over the "*" wildcard group. An empty body means no rules, so everything is allowed.
  */
-export function parseAiCrawlers(robotsTxt: string | null | undefined): AiCrawlerReport {
+export function parseAiCrawlers(robotsTxt: string | null | undefined, path?: string): AiCrawlerReport {
   if (robotsTxt == null) {
     return {
       source: "not-fetched",
@@ -90,11 +117,23 @@ export function parseAiCrawlers(robotsTxt: string | null | undefined): AiCrawler
     };
   }
   const groups = parseGroups(robotsTxt);
-  const wildcard = groups.find((g) => g.agents.includes("*"));
   const agents: Record<string, AiAccess> = {};
   for (const crawler of AI_CRAWLERS) {
-    const named = groups.find((g) => g.agents.includes(crawler.toLowerCase()));
-    agents[crawler] = accessFor(named ?? wildcard);
+    const group = groupFor(groups, crawler);
+    if (!group) agents[crawler] = "allowed";
+    else if (path != null) agents[crawler] = allowsPath(group, path) ? "allowed" : "blocked";
+    else agents[crawler] = siteAccess(group);
   }
-  return { source: "robots.txt", hasWildcardGroup: !!wildcard, agents };
+  return {
+    source: "robots.txt",
+    hasWildcardGroup: groups.some((g) => g.agents.includes("*")),
+    agents,
+    ...(path != null ? { path } : {}),
+  };
+}
+
+/** Whether robots.txt lets a user-agent (e.g. "Googlebot") fetch a path. No applicable group means allowed. */
+export function robotsAllows(robotsTxt: string, agent: string, path: string): boolean {
+  const group = groupFor(parseGroups(robotsTxt), agent);
+  return group ? allowsPath(group, path) : true;
 }

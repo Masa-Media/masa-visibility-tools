@@ -8,7 +8,7 @@
 export type Severity = "error" | "warn" | "info" | "good";
 
 export interface Finding {
-  /** Stable id, e.g. "title.missing" — safe to key UI or filters on. */
+  /** Stable id, e.g. "title.missing". Safe to key UI or filters on. */
   id: string;
   severity: Severity;
   /** Grouping bucket: seo | geo | schema | social | i18n | a11y | crawl. */
@@ -69,9 +69,15 @@ export interface Anchor {
 export type AiAccess = "allowed" | "blocked" | "partial" | "unspecified";
 
 export interface AiCrawlerReport {
-  source: "robots.txt" | "not-fetched";
+  /**
+   * "robots.txt": rules were read. "missing": the site has no robots.txt (a 4xx answer), so every crawler is allowed.
+   * "not-fetched": robots.txt was not read (skipped, a 5xx answer or a network error), so access is unknown.
+   */
+  source: "robots.txt" | "missing" | "not-fetched";
   /** True when robots.txt has a User-agent: * group that applies as fallback. */
   hasWildcardGroup: boolean;
+  /** When set, `agents` says whether each crawler may fetch this path; otherwise it summarises the whole site. */
+  path?: string;
   agents: Record<string, AiAccess>;
 }
 

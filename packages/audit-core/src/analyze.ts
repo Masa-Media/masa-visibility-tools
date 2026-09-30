@@ -5,13 +5,19 @@ import type {
   AiCrawlerReport,
   Category,
 } from "./types.js";
-import { parseAiCrawlers } from "./robots.js";
+import { parseAiCrawlers, robotsAllows } from "./robots.js";
 
 export interface AnalyzeOptions {
+  /** HTTP status the page answered with (after redirects). Anything outside 2xx is reported as an error. */
   httpStatus?: number;
+  /** The page's X-Robots-Tag response header, if any (e.g. "noindex" or "googlebot: noindex"). */
+  xRobotsTag?: string | null;
   /** Pre-parsed AI crawler report, or pass robotsTxt to have it parsed here. */
   ai?: AiCrawlerReport;
+  /** The site's robots.txt body, when it was fetched with a 2xx answer. */
   robotsTxt?: string | null;
+  /** HTTP status of the robots.txt request. A 4xx with no body means the site has no robots.txt: everything is allowed. */
+  robotsStatus?: number;
 }
 
 const WEIGHT: Record<string, number> = { error: 12, warn: 5, info: 0, good: 0 };
@@ -74,18 +80,34 @@ export function analyzeSnapshot(
     add("canonical.missing", "info", "seo", "No canonical link.");
   }
 
-  // ---- robots meta -------------------------------------------------------
+  // ---- HTTP status -------------------------------------------------------
+  const reasons: string[] = [];
+  const status = opts.httpStatus;
+  if (status != null && (status < 200 || status >= 300)) {
+    reasons.push(`HTTP ${status}`);
+    add("http.status", "error", "crawl", `Page answered HTTP ${status}. Search engines do not index a page that answers with an error or a redirect.`, status);
+  }
+
+  // ---- robots meta and X-Robots-Tag ---------------------------------------
   const robotsContent =
     firstMeta(snap, (m) => ["robots", "googlebot"].includes(m.name?.toLowerCase() ?? "")) ?? null;
-  const robotsLower = (robotsContent ?? "").toLowerCase();
-  const index = !robotsLower.includes("noindex");
-  const follow = !robotsLower.includes("nofollow");
-  const reasons: string[] = [];
-  if (!index) {
-    reasons.push("meta robots: noindex");
-    add("robots.noindex", "info", "crawl", "Page is set to noindex.");
-  }
+  const metaDirectives = (robotsContent ?? "").toLowerCase().split(",").map((d) => d.trim());
+  const headerDirectives = opts.xRobotsTag ? xRobotsDirectives(opts.xRobotsTag) : [];
+  const metaNoindex = metaDirectives.includes("noindex") || metaDirectives.includes("none");
+  const headerNoindex = headerDirectives.includes("noindex") || headerDirectives.includes("none");
+  const index = !metaNoindex && !headerNoindex;
+  const follow = ![...metaDirectives, ...headerDirectives].some((d) => d === "nofollow" || d === "none");
+  if (metaNoindex) reasons.push("meta robots: noindex");
+  if (headerNoindex) reasons.push("X-Robots-Tag: noindex");
+  if (!index) add("robots.noindex", "error", "crawl", "Page is set to noindex, so search engines will not show it.");
   if (!follow) add("robots.nofollow", "info", "crawl", "Page is set to nofollow.");
+
+  // ---- robots.txt for this URL --------------------------------------------
+  const path = pageUrl ? pageUrl.pathname + pageUrl.search : undefined;
+  if (opts.robotsTxt != null && path != null && !robotsAllows(opts.robotsTxt, "Googlebot", path)) {
+    reasons.push("robots.txt blocks crawling");
+    add("robots.txt.blocked", "error", "crawl", "robots.txt blocks search engines (Googlebot) from this URL.");
+  }
 
   // ---- html lang ---------------------------------------------------------
   if (!snap.lang) add("lang.missing", "warn", "i18n", "<html> has no lang attribute.");
@@ -112,7 +134,13 @@ export function analyzeSnapshot(
   const missingAlt = snap.images.filter((i) => i.alt === null).length;
   const emptyAlt = snap.images.filter((i) => i.alt === "").length;
   if (missingAlt > 0)
-    add("img.alt.missing", "warn", "a11y", `${missingAlt} of ${total} images have no alt attribute.`, missingAlt);
+    add(
+      "img.alt.missing",
+      "warn",
+      "a11y",
+      `${missingAlt} of ${total} image${total === 1 ? "" : "s"} ${missingAlt === 1 ? "has" : "have"} no alt attribute.`,
+      missingAlt,
+    );
 
   // ---- links -------------------------------------------------------------
   let internal = 0,
@@ -168,10 +196,22 @@ export function analyzeSnapshot(
     add("schema.invalid", "error", "schema", `${invalid} JSON-LD block(s) failed to parse.`, invalid);
 
   // ---- AI crawlers -------------------------------------------------------
-  const ai: AiCrawlerReport = opts.ai ?? parseAiCrawlers(opts.robotsTxt ?? undefined);
+  const robotsMissing =
+    opts.robotsTxt == null && opts.robotsStatus != null && opts.robotsStatus >= 400 && opts.robotsStatus < 500;
+  const ai: AiCrawlerReport =
+    opts.ai ??
+    (robotsMissing
+      ? { ...parseAiCrawlers("", path), source: "missing" }
+      : parseAiCrawlers(opts.robotsTxt ?? undefined, path));
   const blockedAi = Object.entries(ai.agents).filter(([, v]) => v === "blocked").map(([k]) => k);
   if (ai.source === "robots.txt" && blockedAi.length > 0)
-    add("ai.blocked", "info", "geo", `robots.txt blocks ${blockedAi.length} AI crawler(s): ${blockedAi.join(", ")}.`, blockedAi.length);
+    add(
+      "ai.blocked",
+      "warn",
+      "geo",
+      `robots.txt blocks ${blockedAi.length} AI crawler${blockedAi.length === 1 ? "" : "s"}${ai.path != null ? " from this page" : ""}: ${blockedAi.join(", ")}.`,
+      blockedAi.length,
+    );
 
   // ---- scoring -----------------------------------------------------------
   const score = computeScore(findings);
@@ -184,7 +224,7 @@ export function analyzeSnapshot(
     metaDescription: { text: desc || null, length: desc.length },
     canonical: { href: canonicalHref, isSelf: canonicalIsSelf },
     robotsMeta: { content: robotsContent, index, follow },
-    indexable: { value: index, reasons },
+    indexable: { value: reasons.length === 0, reasons },
     headings: { h1, counts, outline: snap.headings },
     schema: { blocks: blocks.map((b) => ({ valid: b.valid, types: b.types, error: b.error })), types },
     openGraph,
@@ -212,6 +252,26 @@ function computeScore(findings: Finding[]): AuditReport["score"] {
 }
 
 const clamp = (n: number) => Math.max(0, Math.min(100, Math.round(n)));
+
+/**
+ * Directives from an X-Robots-Tag header that apply to search engines in general or to Googlebot:
+ * "noindex, nofollow" -> both; "googlebot: noindex" -> noindex; "otherbot: noindex" -> ignored.
+ */
+function xRobotsDirectives(value: string): string[] {
+  const out: string[] = [];
+  let agent: string | null = null;
+  for (const raw of value.toLowerCase().split(",")) {
+    let part = raw.trim();
+    const named = /^([a-z0-9_-]+)\s*:\s*(.*)$/.exec(part);
+    const name = named?.[1];
+    if (name && !["unavailable_after", "max-snippet", "max-image-preview", "max-video-preview"].includes(name)) {
+      agent = name;
+      part = (named?.[2] ?? "").trim();
+    }
+    if (agent === null || agent === "googlebot" || agent === "robots") out.push(part);
+  }
+  return out;
+}
 
 function rels(rel: string | undefined): string[] {
   return (rel ?? "").toLowerCase().split(/\s+/).filter(Boolean);

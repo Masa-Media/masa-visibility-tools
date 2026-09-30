@@ -5,8 +5,7 @@ export default defineConfig({
   format: ["esm", "cjs"],
   dts: true,
   clean: true,
-  sourcemap: true,
   target: "es2021",
-  // node-html-parser is bundled so browser/VS Code consumers get a single file.
-  noExternal: ["node-html-parser"],
+  // node-html-parser stays a regular dependency (not bundled), so its licence ships with it.
+  // Browser / VS Code consumers bundle it themselves.
 });

@@ -15,7 +15,7 @@ It reads the **live, rendered DOM**, so it reflects client-side rendering — ex
 
 ## Privacy
 
-Everything runs locally in your browser. The extension analyses the page you are on and fetches that site's `robots.txt`. It sends **nothing** to Masa Media or anyone else, sets no cookies, and uses no analytics. Permissions: `activeTab` and `scripting`, used only when you click the icon. See [PRIVACY.md](PRIVACY.md).
+Everything runs locally in your browser. The extension analyses the page you are on and fetches that site's `robots.txt`. It sends **nothing** to Masa Media Digital or anyone else, sets no cookies, and uses no analytics. Permissions: `activeTab` and `scripting`, used only when you click the icon. See [PRIVACY.md](PRIVACY.md).
 
 ## Build from source
 

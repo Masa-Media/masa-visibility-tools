@@ -30,4 +30,4 @@ Run the CLI after a build: `node packages/cli/dist/index.js <url> [--json] [--ai
 
 ## Agent plugin
 
-`plugin.json`, `mcp.json` and `skills/` make this repository an Agent Plugin (https://agent-plugins.org): the `masa-web-audit` skill runs the CLI, and `mcp.json` connects Masa Media's read-only MCP server.
+`plugin.json`, `mcp.json` and `skills/` make this repository an Agent Plugin (https://agent-plugins.org): the `masa-web-audit` skill runs the CLI, and `mcp.json` connects Masa Media Digital's read-only MCP server.

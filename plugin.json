@@ -2,7 +2,7 @@
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "masa-visibility-tools",
   "version": "0.1.0",
-  "description": "Technical SEO and GEO checks for AI agents: a skill that audits any web page (indexability, structured data, AI-crawler access) with the masa-audit CLI, plus Masa Media's read-only MCP server.",
+  "description": "Technical SEO and GEO checks for AI agents: a skill that audits any web page (indexability, structured data, AI-crawler access) with the masa-audit CLI, plus Masa Media Digital's read-only MCP server.",
   "author": {
     "name": "Masa Media Digital LTD",
     "email": "contact@masamedia.co.il",

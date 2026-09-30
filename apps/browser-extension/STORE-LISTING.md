@@ -1,14 +1,14 @@
 # Store listing kit — Masa Search Inspector
 
 Copy-paste values for Chrome Web Store, Microsoft Edge Add-ons and Firefox AMO.
-Legal entity everywhere: **Masa Media Digital LTD**. Public display name may be **Masa Media** only where a platform separates the two.
+Legal entity everywhere: **Masa Media Digital LTD**. Public display name may be **Masa Media Digital** only where a platform separates the two.
 
 ## Identity (use verbatim)
 
 | Field | Value |
 |-------|-------|
 | Legal / Publisher / Developer / Vendor | Masa Media Digital LTD |
-| Public display name (only if separated) | Masa Media |
+| Public display name (only if separated) | Masa Media Digital |
 | Website / Homepage | https://masamedia.co.il |
 | Product page | https://masamedia.co.il/tools/search-inspector/ |
 | Support | https://masamedia.co.il/support/ |

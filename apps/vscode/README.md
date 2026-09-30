@@ -15,7 +15,7 @@ Title, meta description (with lengths), canonical (self vs cross), indexability,
 
 ## Privacy
 
-The extension analyses the file you're editing locally. "Audit a URL" fetches only the URL you enter and its robots.txt. Nothing is sent to Masa Media or anyone else; no telemetry.
+The extension analyses the file you're editing locally. "Audit a URL" fetches only the URL you enter and its robots.txt. Nothing is sent to Masa Media Digital or anyone else; no telemetry.
 
 Built on [`@masamedia/audit-core`](https://www.npmjs.com/package/@masamedia/audit-core).
 

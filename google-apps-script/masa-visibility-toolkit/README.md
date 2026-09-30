@@ -35,7 +35,7 @@ To distribute publicly on the **Google Workspace Marketplace**, you additionally
 
 ## Privacy
 
-The functions fetch only the URLs you pass and their robots.txt, using the `script.external_request` scope. No data is sent to Masa Media or anyone else.
+The functions fetch only the URLs you pass and their robots.txt, using the `script.external_request` scope. No data is sent to Masa Media Digital or anyone else.
 
 ## License
 

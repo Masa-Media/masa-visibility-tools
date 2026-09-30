@@ -34,4 +34,4 @@ The JSON report has these top-level fields: `httpStatus`, `title`, `metaDescript
 
 ## Limits
 
-The tool reads one page and its robots.txt. It does not measure rankings, traffic or page speed, and it does not render JavaScript. For content questions about Masa Media itself (services, prices, Hebrew SEO guides), use the MCP server in `mcp.json`.
+The tool reads one page and its robots.txt. It does not measure rankings, traffic or page speed, and it does not render JavaScript. For content questions about Masa Media Digital itself (services, prices, Hebrew SEO guides), use the MCP server in `mcp.json`.

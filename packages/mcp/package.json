@@ -1,0 +1,42 @@
+{
+  "name": "@masamedia/mcp",
+  "version": "0.1.0",
+  "description": "MCP server for Masa Media Digital, an Israeli SEO and GEO agency. Lets AI assistants search the agency's articles, SEO glossary and Google update log, and read its services, prices and contact details.",
+  "mcpName": "io.github.Masa-Media/masa-media-digital",
+  "keywords": ["mcp", "model-context-protocol", "mcp-server", "seo", "geo", "masa-media-digital"],
+  "homepage": "https://www.masamedia.co.il/developers/",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Masa-Media/masa-visibility-tools.git",
+    "directory": "packages/mcp"
+  },
+  "bugs": "https://github.com/Masa-Media/masa-visibility-tools/issues",
+  "author": "Masa Media Digital LTD (https://www.masamedia.co.il)",
+  "license": "MIT",
+  "type": "module",
+  "bin": {
+    "masa-media-mcp": "./dist/index.js"
+  },
+  "files": ["dist", "README.md", "LICENSE"],
+  "scripts": {
+    "build": "tsup",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/client": "^2.2.0",
+    "@modelcontextprotocol/server": "^2.2.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.9.0",
+    "tsup": "^8.3.5",
+    "typescript": "^5.6.3",
+    "vitest": "^2.1.8"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

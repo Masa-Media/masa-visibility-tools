@@ -10,6 +10,7 @@ One shared audit engine, many surfaces: a browser extension, a CLI, a VS Code ex
 |---------|-----------|----------------|
 | [`@masamedia/audit-core`](packages/audit-core) | The framework-free audit engine (SEO / GEO / schema / a11y / AI crawlers) | npm |
 | [`@masamedia/audit-cli`](packages/cli) (`masa-audit`) | Audit any URL from the terminal | npm |
+| [`@masamedia/mcp`](packages/mcp) | MCP server that lets AI assistants search and read masamedia.co.il | npm |
 | [Masa Search Inspector](apps/browser-extension) | One-click on-page audit + AI-crawler check | Chrome / Edge / Firefox |
 | [Masa Web Audit](apps/vscode) | Audit HTML/JSX as you write it | VS Code Marketplace / Open VSX |
 | [Masa AI Crawler Control](wordpress/masa-ai-crawler-control) | Manage GPTBot / ClaudeBot / PerplexityBot / Google-Extended access | WordPress.org |
